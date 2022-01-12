@@ -28,7 +28,7 @@ f = open( "{}/{}/word2vec/vocab_{}.txt".format(mem_path, corpus, variant), "w")
 f.write("\n".join(vocab))
 f.close()
 
-np.save("{}/{}/word2vec/embreddings_{}".format(mem_path, corpus, variant), vecs)
+np.save("{}/{}/word2vec/embeddings_{}".format(mem_path, corpus, variant), vecs)
 
 #clean up
 os.system("rm word2vec_{}.txt".format(variant))
