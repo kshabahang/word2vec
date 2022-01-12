@@ -1,1 +1,10 @@
-time ./word2vec -train ./TASA2.txt -output word2vec_cbow8.txt -save-vocab vocab_word2vec_cbow8.txt -min-count 0 -cbow 1 -size 200 -window 8 -negative 25 -hs 0 -sample 0 -threads 20 -binary 0 -iter 40
+
+MEM_PATH=$(cat memory_path.txt)
+CORPUS=$(cat corpus.txt)
+WINDOW_SIZE=8
+N_NEGATIVE=25
+N_THREADS=8
+N_ITER=40
+SAVE_AS_BIN=0
+MIN_COUNT=0
+time ./word2vec -train $MEM_PATH/$CORPUS/$CORPUS.txt -output word2vec_cbow$WINDOW_SIZE.txt -save-vocab vocab_word2vec_cbow$WINDOW_SIZE.txt -min-count $MIN_COUNT -cbow 1 -size 200 -window $WINDOW_SIZE -negative $N_NEGATIVE -hs 0 -sample 0 -threads $N_THREADS -binary $SAVE_AS_BIN -iter $N_ITER
