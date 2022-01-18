@@ -4,10 +4,10 @@ import sys, os
 
 variant = sys.argv[1]
 
-f = open("memory_path.txt", "r")
+f = open("../memory_path.txt", "r")
 mem_path = f.read().split('\n')[0]
 f.close()
-f = open("corpus.txt", "r")
+f = open("../corpus.txt", "r")
 corpus = f.read().split('\n')[0]
 f.close()
 

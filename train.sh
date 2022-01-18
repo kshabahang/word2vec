@@ -1,6 +1,6 @@
 
-MEM_PATH=$(cat memory_path.txt)
-CORPUS=$(cat corpus.txt)
+MEM_PATH=$(cat ../memory_path.txt)
+CORPUS=$(cat ../corpus.txt)
 WINDOW_SIZE=5
 N_NEGATIVE=25
 N_THREADS=4
