@@ -1,15 +1,20 @@
 import numpy as np
 import sys, os
+import json
 
-
-variant = sys.argv[1]
-
-f = open("../memory_path.txt", "r")
-mem_path = f.read().split('\n')[0]
+f = open("../config.json", "r")
+config = json.loads(f.read())
 f.close()
-f = open("../corpus.txt", "r")
-corpus = f.read().split('\n')[0]
-f.close()
+
+
+variant = config['word2vec']["VARIANT"]#sys.argv[1]
+
+
+mem_path = config["memory_path"] 
+
+
+corpus = config["corpus"] 
+
 
 if not os.path.isdir(mem_path + "{}/word2vec".format(corpus)):
     os.system("mkdir {}/{}/word2vec".format(mem_path, corpus))
