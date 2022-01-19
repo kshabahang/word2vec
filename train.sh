@@ -1,10 +1,8 @@
-
-MEM_PATH=$(cat ../memory_path.txt)
-CORPUS=$(cat ../corpus.txt)
-WINDOW_SIZE=5
-N_NEGATIVE=25
-N_THREADS=4
-N_ITER=40
+CORPUS_PATH=$(jq '.memory_path+.corpus+"/"+.corpus+".txt"|tostring' ../config.json | tr -d '"')
+WINDOW_SIZE=$(jq '.word2vec.WINDOW_SIZE' ../config.json)
+N_NEGATIVE=$(jq '.word2vec.N_NEGATIVE' ../config.json)
+N_THREADS=$(jq '.word2vec.N_THREADS' ../config.json)
+N_ITER=$(jq '.word2vec.N_ITER' ../config.json)
 SAVE_AS_BIN=0
 MIN_COUNT=0
-time ./word2vec -train $MEM_PATH/$CORPUS/$CORPUS.txt -output word2vec_cbow$WINDOW_SIZE.txt -save-vocab vocab_word2vec_cbow$WINDOW_SIZE.txt -min-count $MIN_COUNT -cbow 1 -size 200 -window $WINDOW_SIZE -negative $N_NEGATIVE -hs 0 -sample 0 -threads $N_THREADS -binary $SAVE_AS_BIN -iter $N_ITER
+time ./word2vec -train $CORPUS_PATH -output word2vec_cbow$WINDOW_SIZE.txt -save-vocab vocab_word2vec_cbow$WINDOW_SIZE.txt -min-count $MIN_COUNT -cbow 1 -size 200 -window $WINDOW_SIZE -negative $N_NEGATIVE -hs 0 -sample 0 -threads $N_THREADS -binary $SAVE_AS_BIN -iter $N_ITER
