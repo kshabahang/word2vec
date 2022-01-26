@@ -20,24 +20,24 @@ if not os.path.isdir(mem_path + "{}/word2vec".format(corpus)):
     os.system("mkdir {}/{}/word2vec".format(mem_path, corpus))
 
 
+for m in range(1, config["word2vec"]["N_RUNS"]+1):
 
-
-f = open("word2vec_{}.txt".format(variant), "r")
-vecs = f.readlines()
-f.close()
-
-vocab = [vecs[i].split()[0] for i in range(1, len(vecs))]
-vecs = np.array([np.array(vecs[i].split()[1:]).astype(float) for i in range(1, len(vecs))])
-
-f = open( "{}/{}/word2vec/vocab_{}.txt".format(mem_path, corpus, variant), "w")
-f.write("\n".join(vocab))
-f.close()
-
-np.save("{}/{}/word2vec/embeddings_{}".format(mem_path, corpus, variant), vecs)
-
-#clean up
-os.system("rm word2vec_{}.txt".format(variant))
-os.system("rm vocab_word2vec_{}.txt".format(variant))
+    f = open("word2vec_{}{}.txt".format(variant, m), "r")
+    vecs = f.readlines()
+    f.close()
+    
+    vocab = [vecs[i].split()[0] for i in range(1, len(vecs))]
+    vecs = np.array([np.array(vecs[i].split()[1:]).astype(float) for i in range(1, len(vecs))])
+    
+    f = open( "{}/{}/word2vec/vocab_{}{}_{}.txt".format(mem_path, corpus, variant,config["word2vec"]["WINDOW_SIZE"] , m), "w")
+    f.write("\n".join(vocab))
+    f.close()
+    
+    np.save("{}/{}/word2vec/embeddings_{}{}_{}".format(mem_path, corpus, variant, config["word2vec"]["WINDOW_SIZE"], m), vecs)
+    
+    #clean up
+    os.system("rm word2vec_{}{}.txt".format(variant, m))
+    os.system("rm vocab_word2vec_{}{}.txt".format(variant, m))
 
 
 
