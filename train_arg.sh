@@ -10,5 +10,5 @@ MIN_COUNT=0
 for run_i in `seq 1 $N_RUNS`
 do
 	echo "run $run_i"
-	time ./word2vec -train $CORPUS_PATH -output $MEM_PATH'word2vec_cbowWIN'$WINDOW_SIZE'_RUN'$run_i.txt -save-vocab $MEM_PATH'vocab_word2vec_cbowWIN'$WINDOW_SIZE'_RUN'$run_i.txt -min-count $MIN_COUNT -cbow 1 -size 200 -window $WINDOW_SIZE -negative $N_NEGATIVE -hs 0 -sample 0 -threads $N_THREADS -binary $SAVE_AS_BIN -iter $N_ITER
+	time ./word2vec -train $CORPUS_PATH -output $MEM_PATH'word2vec_cbowWIN'$WINDOW_SIZE'_RUN'$run_i.txt -save-vocab $MEM_PATH'vocab_word2vec_cbowWIN'$WINDOW_SIZE'_RUN'$run_i.txt -min-count $MIN_COUNT -cbow 1 -size 200 -window $WINDOW_SIZE -negative $N_NEGATIVE -hs 0 -sample 0 -threads $N_THREADS -binary $SAVE_AS_BIN -iter $N_ITER -context-smoothing 0.75
 done
