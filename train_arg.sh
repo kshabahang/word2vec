@@ -4,7 +4,7 @@ WINDOW_SIZE=$(jq '.word2vec.WINDOW_SIZE' ../config.json)
 N_NEGATIVE=$(jq '.word2vec.N_NEGATIVE' ../config.json)
 N_THREADS=$(jq '.word2vec.N_THREADS' ../config.json)
 N_ITER=$(jq '.word2vec.N_ITER' ../config.json)
-N_RUNS=$(jq '.word2vec.N_RUNS' ../config.json)
+N_RUNS=2 #$(jq '.word2vec.N_RUNS' ../config.json)
 SAVE_AS_BIN=0
 MIN_COUNT=0
 for run_i in `seq 1 $N_RUNS`
