@@ -130,7 +130,7 @@ for window_size in sweep["WINDOW_SIZE"]:
             
                 I = {vocab[i]:i for i in range(len(vocab))}
             
-                fa_vocab, cue_resps_try, cue_resps = prepareFAs(fas_sub, I)
+                fa_vocab, cue_resps_try, cue_resps = prepareFAs(fas, I)
                 I = {fa_vocab[i]:i for i in range(len(fa_vocab))}
             
             
