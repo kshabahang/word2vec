@@ -105,7 +105,7 @@ for window_size in sweep["WINDOW_SIZE"]:
                         0,
                         1,
                         DIMENSIONALITY,
-                        window_size,
+                        int((window_size - 1)/2),
                         k,
                         0,
                         0,
