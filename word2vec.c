@@ -53,7 +53,7 @@ int *table;
 void InitUnigramTable() {
   int a, i;
   double train_words_pow = 0;
-  double d1;//, power = 0.75;
+  double d1;//, power = 0.75; 
   table = (int *)malloc(table_size * sizeof(int));
   for (a = 0; a < vocab_size; a++) train_words_pow += pow(vocab[a].cn, power);
   i = 0;
@@ -560,6 +560,7 @@ void TrainModel() {
   FILE *fo;
   pthread_t *pt = (pthread_t *)malloc(num_threads * sizeof(pthread_t));
   printf("Starting training using file %s\n", train_file);
+  printf("Context smoothing %.6f\n", power);
   starting_alpha = alpha;
   if (read_vocab_file[0] != 0) ReadVocab(); else LearnVocabFromTrainFile();
   if (save_vocab_file[0] != 0) SaveVocab();

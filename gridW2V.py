@@ -93,7 +93,7 @@ arg_lbls = ["-train",
             "-iter",
             "-context-smoothing"]
 
-print("window-size alpha k med_ranks pfirst")
+print("window-size alpha k med_ranks sterr(med_ranks) pfirst sterr(pfirst)")
 
 for window_size in sweep["WINDOW_SIZE"]:
     for alpha in sweep["alpha"]:
@@ -117,7 +117,7 @@ for window_size in sweep["WINDOW_SIZE"]:
             args = ' '.join(["{} {}".format(arg_lbls[i], arg_vals[i]) for i in range(len(arg_vals))])
             
             res_by_run = {"med_ranks":[], "pfirst":[]}
-            for i in range(N_RUNS + 1):
+            for i in range(N_RUNS):
             
                 os.system("./word2vec " + args + " > train.out")
                 
@@ -131,10 +131,11 @@ for window_size in sweep["WINDOW_SIZE"]:
                 I = {vocab[i]:i for i in range(len(vocab))}
             
                 fa_vocab, cue_resps_try, cue_resps = prepareFAs(fas, I)
-                I = {fa_vocab[i]:i for i in range(len(fa_vocab))}
-            
-            
+                
                 idxs = np.array([I[fa_vocab[i]] for i in range(len(fa_vocab))])
+                
+                I = {fa_vocab[i]:i for i in range(len(fa_vocab))}
+             
             
                 wXw = vecs2cos(vecs[idxs]) - np.eye(len(fa_vocab))
             
@@ -147,6 +148,9 @@ for window_size in sweep["WINDOW_SIZE"]:
                 ranks_w2v = np.array(ranks_w2v)
             
                 res_by_run["med_ranks"].append(np.median(ranks_w2v))
-                res_by_run["pfirst"].append(round(100*sum(ranks_w2v == 0)/len(ranks_w2v), 2))
+                res_by_run["pfirst"].append(100*sum(ranks_w2v == 0)/len(ranks_w2v))
             
-            print(window_size, alpha, k, np.mean(res_by_run["med_ranks"]), np.mean(res_by_run["pfirst"]))
+            print(window_size, alpha, k, round(np.mean(res_by_run["med_ranks"]), 3),
+                    round(np.std(res_by_run["med_ranks"])/np.sqrt(len(res_by_run["med_ranks"])), 3), 
+                    round(np.mean(res_by_run["pfirst"]),3),
+                    round(np.std(res_by_run["pfirst"])/np.sqrt(len(res_by_run["pfirst"])),3))
