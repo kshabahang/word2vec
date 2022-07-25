@@ -136,19 +136,22 @@ for window_size in sweep["WINDOW_SIZE"]:
                 
                 I = {fa_vocab[i]:i for i in range(len(fa_vocab))}
              
+                try: 
+                    wXw = vecs2cos(vecs[idxs]) - np.eye(len(fa_vocab))
             
-                wXw = vecs2cos(vecs[idxs]) - np.eye(len(fa_vocab))
+                    ranks_w2v = []
+                    for i in range(len(cue_resps_try)):
+                        (p, cue, resp1) = cue_resps_try[i]
+                        r_w2v = list(np.argsort(wXw[I[cue]])[::-1]).index(I[resp1])
+                        ranks_w2v.append(r_w2v)
+                    
+                    ranks_w2v = np.array(ranks_w2v)
             
-                ranks_w2v = []
-                for i in range(len(cue_resps_try)):
-                    (p, cue, resp1) = cue_resps_try[i]
-                    r_w2v = list(np.argsort(wXw[I[cue]])[::-1]).index(I[resp1])
-                    ranks_w2v.append(r_w2v)
-                
-                ranks_w2v = np.array(ranks_w2v)
-            
-                res_by_run["med_ranks"].append(np.median(ranks_w2v))
-                res_by_run["pfirst"].append(100*sum(ranks_w2v == 0)/len(ranks_w2v))
+                    res_by_run["med_ranks"].append(np.median(ranks_w2v))
+                    res_by_run["pfirst"].append(100*sum(ranks_w2v == 0)/len(ranks_w2v))
+                except Exception as e:
+                    print(e)
+                    print("Skipping iteration...")
             
             print(window_size, alpha, k, round(np.mean(res_by_run["med_ranks"]), 3),
                     round(np.std(res_by_run["med_ranks"])/np.sqrt(len(res_by_run["med_ranks"])), 3), 
