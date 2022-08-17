@@ -41,6 +41,7 @@ int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, num_threads
 int *vocab_hash;
 long long vocab_max_size = 1000, vocab_size = 0, layer1_size = 100;
 long long train_words = 0, word_count_actual = 0, iter = 5, file_size = 0, classes = 0;
+double prop_train = 0.01;
 real alpha = 0.025, starting_alpha, sample = 1e-3;
 double power = 0.75;
 real *syn0, *syn1, *syn1neg, *expTable;
@@ -160,7 +161,7 @@ void SortVocab() {
   qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
   for (a = 0; a < vocab_hash_size; a++) vocab_hash[a] = -1;
   size = vocab_size;
-  train_words = 0;
+  train_words = 0; //total token count
   for (a = 0; a < size; a++) {
     // Words occuring less than min_count times will be discarded from the vocab
     if ((vocab[a].cn < min_count) && (a != 0)) {
@@ -172,6 +173,7 @@ void SortVocab() {
       while (vocab_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
       vocab_hash[hash] = a;
       train_words += vocab[a].cn;
+      //printf("%llu\n",train_words);
     }
   }
   vocab = (struct vocab_word *)realloc(vocab, (vocab_size + 1) * sizeof(struct vocab_word));
@@ -286,6 +288,7 @@ void LearnVocabFromTrainFile() {
     ReadWord(word, fin, &eof);
     if (eof) break;
     train_words++;
+//    printf("%llu\n",train_words);
     wc++;
     if ((debug_mode > 1) && (wc >= 1000000)) {
       printf("%lldM%c", train_words / 1000000, 13);
@@ -383,7 +386,8 @@ void *TrainModelThread(void *id) {
   real *neu1 = (real *)calloc(layer1_size, sizeof(real));
   real *neu1e = (real *)calloc(layer1_size, sizeof(real));
   FILE *fi = fopen(train_file, "rb");
-  fseek(fi, file_size / (long long)num_threads * (long long)id, SEEK_SET);
+  fseek(fi, file_size / (long long)num_threads * (long long)id, SEEK_SET); 
+
   while (1) {
     if (word_count - last_word_count > 10000) {
       word_count_actual += word_count - last_word_count;
@@ -393,6 +397,9 @@ void *TrainModelThread(void *id) {
         printf("%cAlpha: %f  Progress: %.2f%%  Words/thread/sec: %.2fk  ", 13, alpha,
          word_count_actual / (real)(iter * train_words + 1) * 100,
          word_count_actual / ((real)(now - start + 1) / (real)CLOCKS_PER_SEC * 1000));
+        //printf("\n%llu", word_count_actual);
+        //printf("\n%llu", word_count);
+        //printf("\n%llu", last_word_count);
         fflush(stdout);
       }
       alpha = starting_alpha * (1 - word_count_actual / (real)(iter * train_words + 1));
@@ -561,12 +568,33 @@ void TrainModel() {
   pthread_t *pt = (pthread_t *)malloc(num_threads * sizeof(pthread_t));
   printf("Starting training using file %s\n", train_file);
   printf("Context smoothing %.6f\n", power);
+  printf("Proportion Training %f\n", prop_train);
+  printf("Window size %d\n", window);
+  printf("Negative samples %d\n", negative);
+  
+ 
   starting_alpha = alpha;
   if (read_vocab_file[0] != 0) ReadVocab(); else LearnVocabFromTrainFile();
   if (save_vocab_file[0] != 0) SaveVocab();
   if (output_file[0] == 0) return;
+
+  if (prop_train < 1){
+    train_words = (long long) floor(prop_train*train_words);                                                     
+  }
+
+  printf("Reduced Train Words %llu", train_words);
+  
+
   InitNet();
   if (negative > 0) InitUnigramTable();
+
+//  printf("\ntrain_words: %llu", train_words);
+//  printf("\nproportion: %f", prop_train);
+  // printf("\nshrink: %llu", (long long) floor(prop_train*train_words));
+  
+  
+
+
   start = clock();
   for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void *)a);
   for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
@@ -706,6 +734,10 @@ int main(int argc, char **argv) {
   if ((i = ArgPos((char *)"-min-count", argc, argv)) > 0) min_count = atoi(argv[i + 1]);
   if ((i = ArgPos((char *)"-classes", argc, argv)) > 0) classes = atoi(argv[i + 1]);
   if ((i = ArgPos((char *)"-context-smoothing", argc, argv)) > 0) power = atof(argv[i + 1]);
+  if ((i = ArgPos((char *)"-prop-train", argc, argv)) > 0) prop_train = atof(argv[i+1]);
+
+
+
   vocab = (struct vocab_word *)calloc(vocab_max_size, sizeof(struct vocab_word));
   vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
   expTable = (real *)malloc((EXP_TABLE_SIZE + 1) * sizeof(real));
