@@ -91,7 +91,8 @@ arg_lbls = ["-train",
             "-threads",
             "-binary",
             "-iter",
-            "-context-smoothing"]
+            "-context-smoothing",
+            "-prop-train"]
 
 print("window-size alpha k med_ranks sterr(med_ranks) pfirst sterr(pfirst)")
 
@@ -112,7 +113,8 @@ for window_size in sweep["WINDOW_SIZE"]:
                         N_THREADS,
                         0,
                         N_ITER,
-                        alpha]
+                        alpha,
+                        1.0]
             
             args = ' '.join(["{} {}".format(arg_lbls[i], arg_vals[i]) for i in range(len(arg_vals))])
             
